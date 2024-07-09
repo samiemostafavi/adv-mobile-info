@@ -128,7 +128,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid bands parameter, must be colon separated numbers", http.StatusBadRequest)
 			return
 		}
-		response, err = runCommand("gsmat", `AT+QNWPREFCFG:"`+selectband+`",`+bands)
+		response, err = runCommand("gsmat", `AT+QNWPREFCFG="`+selectband+`",`+bands)
 	} else {
 		switch query {
 		case "info":
