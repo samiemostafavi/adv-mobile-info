@@ -79,5 +79,7 @@ Set the bands for the modem, where the `selectband` parameter can only be "gw_ba
 The bands parameters must be colon separated numbers.
 ```
 curl "http://10.10.5.7:50500/?selectband=nr5g_band&bands=1:2:3:5:7:8:12:14:20:25:28:38:41:48:66:71:77:78:79"
+
+OK
 ```
 
