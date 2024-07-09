@@ -108,6 +108,8 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			response, err = getStatus()
 		case "sim":
 			response, err = runCommand("gsmat", "AT+QUIMSLOT?")
+		case "bands":
+			response, err = runCommand("gsmat", `AT+QNWPREFCFG=\"policy_band\"`)
 		case "simready":
 			response, err = runCommand("gsmat", "AT+CPIN?")
 		default:
