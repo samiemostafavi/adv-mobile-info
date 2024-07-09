@@ -73,28 +73,38 @@ func runCommand(cmd string, args ...string) ([]byte, error) {
 	return output, nil
 }
 
+func isColonSeparatedNumbers(input string) bool {
+	parts := strings.Split(input, ":")
+	for _, part := range parts {
+		if _, err := strconv.Atoi(part); err != nil {
+			return false
+		}
+	}
+	return true
+}
+
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	// Get the query parameters
 	query := r.URL.Query().Get("query")
 	selectsim := r.URL.Query().Get("selectsim")
-	sim := r.URL.Query().Get("sim")
 	gsmpwr := r.URL.Query().Get("gsmpwr")
-	pwr := r.URL.Query().Get("pwr")
+	selectband := r.URL.Query().Get("selectband")
+	bands := r.URL.Query().Get("bands")
 
 	var response []byte
 	var err error
 
 	if selectsim != "" {
-		simNumber, err := strconv.Atoi(sim)
+		simNumber, err := strconv.Atoi(selectsim)
 		if err != nil || (simNumber != 1 && simNumber != 2) {
-			http.Error(w, "Invalid sim parameter, must be 1 or 2", http.StatusBadRequest)
+			http.Error(w, "Invalid selectsim parameter, must be 1 or 2", http.StatusBadRequest)
 			return
 		}
-		response, err = runCommand("gsmat", "AT+QUIMSLOT="+sim)
+		response, err = runCommand("gsmat", "AT+QUIMSLOT="+selectsim)
 	} else if gsmpwr != "" {
-		pwrState, err := strconv.Atoi(pwr)
+		pwrState, err := strconv.Atoi(gsmpwr)
 		if err != nil || (pwrState != 0 && pwrState != 1) {
-			http.Error(w, "Invalid pwr parameter, must be 0 or 1", http.StatusBadRequest)
+			http.Error(w, "Invalid gsmpwr parameter, must be 0 or 1", http.StatusBadRequest)
 			return
 		}
 		if pwrState == 1 {
@@ -102,6 +112,22 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		} else {
 			response, err = runCommand("gsmpwr", "off")
 		}
+	} else if selectband != "" {
+		validBands := map[string]bool{
+			"gw_band":       true,
+			"lte_band":      true,
+			"nsa_nr5g_band": true,
+			"nr5g_band":     true,
+		}
+		if !validBands[selectband] {
+			http.Error(w, "Invalid selectband parameter", http.StatusBadRequest)
+			return
+		}
+		if bands == "" || !isColonSeparatedNumbers(bands) {
+			http.Error(w, "Invalid bands parameter, must be colon separated numbers", http.StatusBadRequest)
+			return
+		}
+		response, err = runCommand("gsmat", `+QNWPREFCFG:"`+selectband+`",`+bands)
 	} else {
 		switch query {
 		case "info":
