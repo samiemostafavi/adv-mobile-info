@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -64,11 +65,60 @@ func getStatus() ([]byte, error) {
 	return jsonData, nil
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
-	// Define the JSON response
-	response, err := getStatus()
+func runCommand(cmd string, args ...string) ([]byte, error) {
+	output, err := exec.Command(cmd, args...).Output()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
+	}
+	return output, nil
+}
+
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+	// Get the query parameters
+	query := r.URL.Query().Get("query")
+	selectsim := r.URL.Query().Get("selectsim")
+	sim := r.URL.Query().Get("sim")
+	gsmpwr := r.URL.Query().Get("gsmpwr")
+	pwr := r.URL.Query().Get("pwr")
+
+	var response []byte
+	var err error
+
+	if selectsim != "" {
+		simNumber, err := strconv.Atoi(sim)
+		if err != nil || (simNumber != 1 && simNumber != 2) {
+			http.Error(w, "Invalid sim parameter, must be 1 or 2", http.StatusBadRequest)
+			return
+		}
+		response, err = runCommand("gsmat", "AT+QUIMSLOT="+sim)
+	} else if gsmpwr != "" {
+		pwrState, err := strconv.Atoi(pwr)
+		if err != nil || (pwrState != 0 && pwrState != 1) {
+			http.Error(w, "Invalid pwr parameter, must be 0 or 1", http.StatusBadRequest)
+			return
+		}
+		if pwrState == 1 {
+			response, err = runCommand("gsmpwr", "on")
+		} else {
+			response, err = runCommand("gsmpwr", "off")
+		}
+	} else {
+		switch query {
+		case "info":
+			response, err = getStatus()
+		case "sim":
+			response, err = runCommand("gsmat", "AT+QUIMSLOT?")
+		case "simready":
+			response, err = runCommand("gsmat", "AT+CPIN?")
+		default:
+			http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// Set the Content-Type header to application/json
