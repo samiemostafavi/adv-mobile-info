@@ -86,10 +86,17 @@ func isColonSeparatedNumbers(input string) bool {
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	// Get the query parameters
 	query := r.URL.Query().Get("query")
+	net := r.URL.Query().Get("net")
 	selectsim := r.URL.Query().Get("selectsim")
 	gsmpwr := r.URL.Query().Get("gsmpwr")
 	selectband := r.URL.Query().Get("selectband")
 	bands := r.URL.Query().Get("bands")
+	validBands := map[string]bool{
+		"gw_band":       true,
+		"lte_band":      true,
+		"nsa_nr5g_band": true,
+		"nr5g_band":     true,
+	}
 
 	var response []byte
 	var err error
@@ -113,12 +120,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			response, err = runCommand("gsmpwr", "off")
 		}
 	} else if selectband != "" {
-		validBands := map[string]bool{
-			"gw_band":       true,
-			"lte_band":      true,
-			"nsa_nr5g_band": true,
-			"nr5g_band":     true,
-		}
 		if !validBands[selectband] {
 			http.Error(w, "Invalid selectband parameter", http.StatusBadRequest)
 			return
@@ -134,8 +135,14 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			response, err = getStatus()
 		case "sim":
 			response, err = runCommand("gsmat", "AT+QUIMSLOT?")
-		case "bands":
+		case "policybands":
 			response, err = runCommand("gsmat", `AT+QNWPREFCFG="policy_band"`)
+		case "bands":
+			if !validBands[net] {
+				http.Error(w, "Invalid net parameter", http.StatusBadRequest)
+				return
+			}
+			response, err = runCommand("gsmat", `AT+QNWPREFCFG="`+net+`"`)
 		case "simready":
 			response, err = runCommand("gsmat", "AT+CPIN?")
 		default:
