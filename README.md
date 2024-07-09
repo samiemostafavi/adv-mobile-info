@@ -71,8 +71,9 @@ The `net` parameter can only be "gw_band", "lte_band", "nsa_nr5g_band", or "nr5g
 ```
 curl "http://10.10.5.7:50500/?query=bands&net=nr5g_band"
 
++QNWPREFCFG: "nr5g_band",41:78
+OK
 ```
-
 
 Set the bands for the modem, where the `selectband` parameter can only be "gw_band", "lte_band", "nsa_nr5g_band", or "nr5g_band".
 The bands parameters must be colon separated numbers.
