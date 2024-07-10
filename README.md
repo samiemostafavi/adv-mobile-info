@@ -20,7 +20,18 @@ Add the following to the scripts tab of the router
 ami > /root/ami.log 2>&1 &
 ```
 
+To change the modem configurations such as the default simcard, on a machine connected via network to the Adv router, run
+```
+curl -LJO -k https://github.com/samiemostafavi/advmobileinfo/raw/main/config_adv.sh
+chmod +x config_adv.sh
+vim config_adv.sh
+./config_adv.sh
+```
+NOTE: edit the script with the IP of the adv router and its login password, and your desired configurations
+
 # Commands
+
+You can run the following commands on a machine connected via network to the Adv router.
 
 Get connection information
 ```
@@ -47,13 +58,14 @@ curl "http://10.10.5.7:50500/?query=sim"
 OK
 ```
 
-Set the default simcard slot to 2 (only 1 and 2)
+Check IMSI of the simcard
 ```
-curl "http://10.10.5.7:50500/?selectsim=2"
+curl "http://10.10.5.7:50500/?query=imsi"
 
+001010000000005
 OK
-+CPIN: NOT READY
 ```
+
 
 Check the bands that the modem can connect to (is capable of connecting to)
 ```

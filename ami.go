@@ -86,11 +86,10 @@ func isColonSeparatedNumbers(input string) bool {
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	// Get the query parameters
 	query := r.URL.Query().Get("query")
-	net := r.URL.Query().Get("net")
-	selectsim := r.URL.Query().Get("selectsim")
 	gsmpwr := r.URL.Query().Get("gsmpwr")
 	selectband := r.URL.Query().Get("selectband")
 	bands := r.URL.Query().Get("bands")
+	net := r.URL.Query().Get("net")
 	validBands := map[string]bool{
 		"gw_band":       true,
 		"lte_band":      true,
@@ -101,14 +100,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	var response []byte
 	var err error
 
-	if selectsim != "" {
-		simNumber, err := strconv.Atoi(selectsim)
-		if err != nil || (simNumber != 1 && simNumber != 2) {
-			http.Error(w, "Invalid selectsim parameter, must be 1 or 2", http.StatusBadRequest)
-			return
-		}
-		response, err = runCommand("gsmat", "AT+QUIMSLOT="+selectsim)
-	} else if gsmpwr != "" {
+	if gsmpwr != "" {
 		pwrState, err := strconv.Atoi(gsmpwr)
 		if err != nil || (pwrState != 0 && pwrState != 1) {
 			http.Error(w, "Invalid gsmpwr parameter, must be 0 or 1", http.StatusBadRequest)
@@ -135,6 +127,8 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			response, err = getStatus()
 		case "sim":
 			response, err = runCommand("gsmat", "AT+QUIMSLOT?")
+		case "imsi":
+			response, err = runCommand("gsmat", "AT+CIMI")
 		case "policybands":
 			response, err = runCommand("gsmat", `AT+QNWPREFCFG="policy_band"`)
 		case "bands":
