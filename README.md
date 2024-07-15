@@ -36,9 +36,10 @@ curl -LJO -k https://github.com/samiemostafavi/advmobileinfo/raw/main/get_conf_a
 chmod +x get_conf_adv.sh
 vim get_conf_adv.sh
 ./get_conf_adv.sh
-
 ```
-This will give:
+NOTE: edit the script with the IP of the adv router and its login password, and your desired configurations
+
+This will result in:
 ```
 Login successful
 Get config successful
