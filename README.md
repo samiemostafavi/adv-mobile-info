@@ -22,6 +22,7 @@ ami > /root/ami.log 2>&1 &
 
 To change the modem configurations such as the default simcard, on a machine connected via network to the Adv router, run
 ```
+apt-get install jq
 curl -LJO -k https://github.com/samiemostafavi/advmobileinfo/raw/main/config_adv.sh
 chmod +x config_adv.sh
 vim config_adv.sh
