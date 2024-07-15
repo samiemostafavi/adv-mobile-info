@@ -29,6 +29,64 @@ vim config_adv.sh
 ```
 NOTE: edit the script with the IP of the adv router and its login password, and your desired configurations
 
+To see a complete system status including the IPs and sim card selected use `get_conf_adv.sh` script
+```
+curl -LJO -k https://github.com/samiemostafavi/advmobileinfo/raw/main/get_conf_adv.sh
+chmod +x get_conf_adv.sh
+vim get_conf_adv.sh
+./get_conf_adv.sh
+Login successful
+```
+This will give:
+```
+Get config successful
+{
+  "Mobile Connection": {
+    "SIM Card": "2nd",
+    "IP Address": "Unassigned",
+    "IPv6 Address": "Unassigned",
+    "State": "Preparing"
+  },
+  "Primary LAN": {
+    "IP Address": "10.10.5.8 / 255.255.0.0",
+    "IPv6 Address": "Unassigned",
+    "MAC Address": "00:0A:14:8E:9A:77",
+    "Rx Data": "26.7 MB",
+    "Tx Data": "6.1 MB"
+  },
+  "Secondary LAN": {
+    "IP Address": "Unassigned",
+    "IPv6 Address": "Unassigned",
+    "MAC Address": "00:0A:14:8E:9A:78"
+  },
+  "Tertiary LAN": {
+    "IP Address": "10.42.3.1 / 255.255.255.0",
+    "IPv6 Address": "Unassigned",
+    "MAC Address": "00:0A:14:8E:9A:79",
+    "Rx Data": "196.9 MB",
+    "Tx Data": "277.0 MB"
+  },
+  "Peripheral Ports": {
+    "Expansion Port 1": "RS-232",
+    "Expansion Port 2": "RS-485",
+    "Binary Input 0": "Off",
+    "Binary Input 1": "Off",
+    "Binary Output 0": "Off",
+    "Binary Output 1": "Off"
+  },
+  "System Information": {
+    "Firmware Version": "6.2.9 (2021-04-07)",
+    "Serial Number": "ACZ1100002516992",
+    "Hardware UUID": "cdc8b8b4-ae58-11ec-88f7-000a148e9a77",
+    "Profile": "Standard",
+    "Supply Voltage": "12.1 V",
+    "Temperature": "33 �C",
+    "Time": "2024-07-15 13:15:48",
+    "Uptime": "4 days, 2 hours, 30 minutes"
+  }
+}
+```
+
 # Commands
 
 You can run the following commands on a machine connected via network to the Adv router.
@@ -48,14 +106,6 @@ curl "http://10.10.5.7:50500/?gsmpwr=0"
 Turn on the modem
 ```
 curl "http://10.10.5.7:50500/?gsmpwr=1"
-```
-
-Check which simcard deos the modem use
-```
-curl "http://10.10.5.7:50500/?query=sim"
-
-+QUIMSLOT: 1
-OK
 ```
 
 Check IMSI of the simcard
