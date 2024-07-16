@@ -3,7 +3,9 @@
 
 # Define login credentials
 USERNAME="root" # always root
+#IP="10.10.5.6" # example: 10.10.5.8
 IP="10.10.5.8" # example: 10.10.5.8
+#PASSWORD="P02516851h" # check the password from expeca website
 PASSWORD="P02516992h" # check the password from expeca website
 
 # Define the URL and the session cookie
@@ -71,14 +73,26 @@ extracted_content=$(echo "$html_content" | sed -n '/<td nowrap align="center" cl
 # Remove HTML tags and keep only the content
 cleaned_content=$(echo "$extracted_content" | sed 's/<[^>]*>//g' | sed '/^\s*$/d')
 
+# echo $cleaned_content
+
 # Initialize variables
 json="{"
 current_header=""
 section_content=""
 
+TYPE1='(Mobile Connection|Primary LAN|Secondary LAN|Tertiary LAN|Peripheral Ports|System Information)'
+TYPE2='(Mobile Connection|ETH0|ETH1|ETH2|Peripheral Ports|System Information)'
+
+# Check if 'ETH0' is in the cleaned_content
+if [[ "$cleaned_content" == *"ETH0"* ]]; then
+  SEPARATORS="$TYPE2"
+else
+  SEPARATORS="$TYPE1"
+fi
+
 # Read the cleaned content line by line
 while IFS= read -r line; do
-    if [[ "$line" =~ (Mobile Connection|Primary LAN|Secondary LAN|Tertiary LAN|Peripheral Ports|System Information) ]]; then
+    if [[ "$line" =~ $SEPARATORS ]]; then
         # If we encounter a new header, process the previous section
         if [ -n "$current_header" ]; then
             # Process the section content to extract key-value pairs
