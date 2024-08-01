@@ -3,7 +3,7 @@
 
 # Define login credentials
 USERNAME="root" # always root
-IP="10.10.5.8" # example: 10.10.5.8
+IP="10.42.3.1" # example: 10.10.5.8
 PASSWORD="P02516992h" # check the password from expeca website
 
 # Define the URL and the session cookie
